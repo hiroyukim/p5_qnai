@@ -2,7 +2,10 @@ use inc::Module::Install;
 name 'Qnai';
 all_from 'lib/Qnai.pm';
 
-# requires '';
+requires 'Text::Xslate';
+requires 'Class::Load';
+requires 'Sub::Name';
+requires 'Try::Tiny';
 
 tests 't/*.t';
 author_tests 'xt';
