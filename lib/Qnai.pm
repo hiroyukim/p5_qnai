@@ -103,7 +103,14 @@ sub run {
         my $err = $_; 
         Carp::confess($err); #FIXME 
     };
-        
+
+    # templateがない場合は404となる（一時的ん処置ここではやらない）
+    unless( $self->{template} ) {
+        return $self->response(
+            404,['Content-type' => 'text/html'],[]
+        );
+    }
+
     #FIXME: base class 作れ
     my $content = $self->view->render(
         $self->{template},
