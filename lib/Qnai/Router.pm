@@ -4,25 +4,30 @@ use warnings;
 use base qw/Class::Accessor::Fast/;
 use Router::Simple;
 use Params::Validate qw(:all);
+use Qnai::Exception;
 use Carp ();
 
-__PACKAGE__->mk_accessors(qw/rules router_simple system_template/);
+__PACKAGE__->mk_accessors(qw/rules router_simple system_template template_path ext/);
 
 sub new {
     my $class = shift;
-    my ($template_path,$rules) = validate_pos(@_,
+    my ($template_path,$rules,$opt) = validate_pos(@_,
         { type => SCALAR   },
         { type => ARRAYREF },
+        { type => HASHREF|UNDEF, optional => 1 },
     );
 
     Carp::Confess('please use Qnai::Router::Rule.') 
         unless( @$rules == grep { $_->isa('Qnai::Router::Rule') } @$rules);
+
+    $opt ||= {};
 
     my $self = bless {
         rules           => $rules, 
         router_simple   => Router::Simple->new,
         system_template => [],
         template_path   => $template_path,
+        ext             => $opt->{ext} || '.html',
     }, $class;
 
     $self->_init();
@@ -48,24 +53,33 @@ sub _init {
 sub match {
     my $self = shift;
     my $env  = shift;
+    my $path_info = $env->{PATH_INFO};
 
-    if( $self->is_directory_traversal($env) ) {
+    if( $self->is_directory_traversal($path_info) ) {
         Qnai::Exception::DirectoryTraversal->throw();
     }
 
-    my $match_rule = $self->router_simple->match($env);
-
-    if( $match_rule ) {
-        return $match_rule;
+    if( my $match_rule = $self->router_simple->match($env) ) {
+        return Qnai::Router::Rule->new($match_rule);
     }
     else {
-        if( $self->is_system_template($env) ) {
+        if( $self->is_system_template($path_info) ) {
             Qnai::Exception::SystemTemplate->throw();
         }
         else {
-            my ($dir,$file) = $self->parse_path($env);
+            my ($dir,$file) = $self->parse_path($path_info);
 
-            my $template_path = join('/',$dir,$file);
+            my $file_path = join('/','/',@$dir,$file,$self->ext() );
+                        
+            unless( -e join('/',$self->template_path,$file_path) ) {
+                Qnai::Exception::FileNotFound->throw();
+            }
+
+            return Qnai::Router::Rule->new({
+                pattern  => join('/','/',@$dir,$file ),
+                code     => sub {},
+                template => $file_path, 
+            });
         } 
     }
 }
@@ -77,7 +91,7 @@ sub is_directory_traversal {
 
 sub parse_path {
     my ($self,$path) = @_;
-    my ( $dir,$file ) = $path =~ m{^/([a-z0-9_/]*)/([^/]*)$}i;
+    my ( $dir,$file ) = $path =~ m{^/([a-z0-9_/]*)/([^/.]*)\.?(.+)?$}i;
     unless( $dir ) {
         $dir = 'root'; 
     }
