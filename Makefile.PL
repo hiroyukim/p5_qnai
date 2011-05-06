@@ -11,7 +11,7 @@ requires 'Class::Accessor::Fast';
 requires 'Test::More'                => 0.88;
 requires 'Router::Simple'            => 0.02;
 
-tests 't/*.t';
+tests 't/*.t t/*/*.t t/*/*/*.t';
 author_tests 'xt';
 
 test_requires 'Test::More';
