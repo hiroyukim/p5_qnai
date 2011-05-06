@@ -9,8 +9,8 @@ __PACKAGE__->mk_accessors(qw/pattern code template/);
 sub new {
     my $class = shift;
     my %args  = validate(@_,{
-        pattern  => { type => SCALAR                      },
-        code     => { type => CODEREF                     },
+        pattern  => { type => SCALAR|UNDEF, optional => 1 },
+        code     => { type => CODEREF|UNDEF, optional => 1 },
         template => { type => SCALAR|UNDEF, optional => 1 },
     });
     
