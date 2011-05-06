@@ -15,10 +15,12 @@ my $rules = [
     },
 ];
 
-my $router = Qnai::Router::Rule->new();
+my $router = Qnai::Router::Rule->new($rules->[0]);
 
-subtest 'include system_template' => sub {
-    cmp_ok( $rules->[0], 'cmp', $router->system_template->[0] );
+subtest 'to_hash' => sub {
+    ok( $router->to_hash->{pattern});
+    ok( $router->to_hash->{code}   );
+    ok( $router->to_hash->{template}   );
     done_testing();
 };
 
