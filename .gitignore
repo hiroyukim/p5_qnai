@@ -1,0 +1,8 @@
+Makefile
+build/
+inc/
+*.sw[po]
+*.bak
+*.old
+Build
+_build/
