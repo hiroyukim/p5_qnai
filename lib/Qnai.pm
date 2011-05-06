@@ -7,6 +7,7 @@ use Qnai::Request;
 use Qnai::Response;
 use Qnai::Router;
 use Qnai::View::Factory;
+use Qnai::Router::Rule;
 use Try::Tiny;
 use Sub::Name;
 
@@ -33,13 +34,13 @@ sub import {
 }
 
 sub rule {
-    my ($self,$pattern,$code,$opt) = @_;
+    my ($self,$pattern,$code,$template) = @_;
 
-    push @{$rules},{
+    push @{$rules},Qnai::Router::Rule->new({
         pattern => $pattern,
-        code    => $code,
-        opt     => $opt
-    };
+        code     => $code,
+        template => $template||undef,
+    });
 }
 
 sub router { Qnai::Router->new($rules) }
@@ -48,10 +49,10 @@ sub register_dispatch {
     my ($self,$rule) = @_;
     my $class = ref($self);
 
-    my $subname = join('_',(split(/\//,$rule->{pattern})));
+    my $subname = join('_',(split(/\//,$rule->pattern)));
 
     no strict 'refs';
-    *{"${class}::dispatch"} = subname $subname => $rule->{code};
+    *{"${class}::dispatch"} = subname $subname => $rule->code;
 }
 
 sub response {
@@ -80,7 +81,7 @@ sub new {
 
 sub view {
     my $self       = shift;
-    my $view_class = shift;
+    my $view_class = shift || 'TX';
     Qnai::View::Factory->create($view_class,$self->config->{view});
 }
 
@@ -89,14 +90,16 @@ sub run {
 
     try {
         if( my $match_rule = $self->router->match($self->env) ) {
-            #FIXME: 名前が変
-            $self->{template} = $match_rule->{opt}->{template} if $match_rule->{opt}->{template};
-            $self->register_dispatch($match_rule);
-            $self->dispatch();
+            if( $match_rule->template ) {
+                $self->{template} = $match_rule->template;
+            }
+            if( $match_rule->code ) {
+                $self->register_dispatch($match_rule);
+                $self->dispatch();
+            }
         }
         else {
-            # 更にテンプレート単体を探す
-            # pathを解析して $self->{template} を埋めろ
+            Qnai::Exception::HTTP::NotFound->throw();
         }
     }
     catch {
@@ -104,14 +107,6 @@ sub run {
         Carp::confess($err); #FIXME 
     };
 
-    # templateがない場合は404となる（一時的ん処置ここではやらない）
-    unless( $self->{template} ) {
-        return $self->response(
-            404,['Content-type' => 'text/html'],[]
-        );
-    }
-
-    #FIXME: base class 作れ
     my $content = $self->view->render(
         $self->{template},
         {
@@ -124,7 +119,7 @@ sub run {
     return $self->response(
         200,
         ['Content-type' => 'text/html'],
-        $content,
+        Encode::encode('utf8',$content),
     );
 
 }
