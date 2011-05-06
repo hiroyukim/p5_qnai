@@ -86,7 +86,7 @@ sub match {
 
 sub is_directory_traversal {
     my ($self,$path) = @_;    
-    ( $path =~ /\.{1,2}/g )
+    ( $path =~ /^[\/a-z0-9_]$/ig ) ? 0 : 1;
 }
 
 sub parse_path {
