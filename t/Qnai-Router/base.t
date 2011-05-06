@@ -32,11 +32,6 @@ subtest 'match /' => sub {
     done_testing();
 };
 
-#subtest 'unmatch /hoge/' => sub { 
-#    ok( not $router->match({ PATH_INFO => '/hoge/' }) );
-#    done_testing();
-#};
-
 subtest 'parse_path /user/edit' => sub {
     my ($dir,$file) = $router->parse_path('/user/edit');
     cmp_ok( $dir->[0],  'eq', 'user' ); 
