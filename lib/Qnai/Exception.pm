@@ -12,6 +12,9 @@ sub throw {
 package Qnai::Exception::HTTP;
 use base 'Qnai::Exception';
 
+package Qnai::Exception::HTTP::NotFound;
+use base 'Qnai::Exception';
+
 package Qnai::Exception::FileNotFound;
 use base 'Qnai::Exception';
 
