@@ -43,7 +43,10 @@ sub rule {
     });
 }
 
-sub router { Qnai::Router->new($rules) }
+sub router { 
+    my $self = shift;
+    Qnai::Router->new($self->config->{template_path} => $rules) 
+}
 
 sub register_dispatch {
     my ($self,$rule) = @_;
@@ -57,7 +60,7 @@ sub register_dispatch {
 
 sub response {
     my $self   = shift;
-    Qnai::Response->new(@_);
+    Qnai::Response->new(@_)->finalize();
 }
 
 sub config {
@@ -81,7 +84,7 @@ sub new {
 
 sub view {
     my $self       = shift;
-    my $view_class = shift || 'TX';
+    my $view_class = shift || 'Qnai::View::TX';
     Qnai::View::Factory->create($view_class,$self->config->{view});
 }
 
@@ -121,7 +124,6 @@ sub run {
         ['Content-type' => 'text/html'],
         Encode::encode('utf8',$content),
     );
-
 }
 
 1;

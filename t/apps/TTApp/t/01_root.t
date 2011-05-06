@@ -5,6 +5,7 @@ use Plack::Util;
 use Test::More;
 
 my $app = Plack::Util::load_psgi 'TTApp.psgi';
+
 test_psgi
     app => $app,
     client => sub {

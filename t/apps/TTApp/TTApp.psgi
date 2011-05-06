@@ -3,7 +3,6 @@ use warnings;
 use utf8;
 use TTApp;
 
-sub {
-    my $env = shift;
-    TTApp->new($nev)->run();
+my $app = sub {
+    TTApp->new(shift)->run();
 };
