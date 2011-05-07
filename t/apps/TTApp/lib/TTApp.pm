@@ -8,6 +8,7 @@ use Path::Class;
 use Cwd;
 
 config({
+    encoding      => 'utf8',
     template_path => dir( cwd() ,'template' )->stringify,
     view => {
         syntax => 'TTerse',

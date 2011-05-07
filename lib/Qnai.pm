@@ -78,8 +78,14 @@ sub new {
     bless { 
         env    => $env,
         stash  => {}, 
-        req    => Qnai::Request->new($env),
+        req    => Qnai::Request->new($env => $class->encoding),
     }, $class; 
+}
+
+sub encoding {
+    my $self     = shift;
+    my $encoding = shift;
+    return $encoding || $self->config->{encoding};
 }
 
 sub view {
