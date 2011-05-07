@@ -128,7 +128,7 @@ sub run {
     return $self->response(
         200,
         ['Content-type' => 'text/html'],
-        Encode::encode('utf8',$content),
+        Encode::encode($self->encoding,$content),
     );
 }
 
