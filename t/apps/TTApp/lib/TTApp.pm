@@ -31,4 +31,17 @@ rule('/endocding' => sub {
 } => '/root/index.html');
 
 
+register_prepare sub {
+    my $self = shift;
+
+    $self->stash->{hoge} = 'register_prepare';
+};
+
+rule('/register_prepare' => sub {
+    my $self = shift;
+
+} => '/root/index.html');
+
+
+
 1;

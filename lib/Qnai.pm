@@ -26,7 +26,7 @@ sub import {
         push @{"$caller\::ISA"},$class;
     }
 
-    for my $func ( qw(rule config) ) {
+    for my $func ( qw(rule config register_prepare) ) {
         my $code = $class->can($func);
         no strict 'refs'; ## no critic.
         *{"$caller\::$func"} = sub { $code->($caller,@_) }; 
@@ -45,7 +45,7 @@ sub rule {
 
 sub router { 
     my $self = shift;
-    Qnai::Router->new($self->config->{template_path} => $rules) 
+    Qnai::Router->new($self->config->{template_path} => $rules => $self->config->{router_option}) 
 }
 
 sub register_dispatch {
@@ -64,6 +64,14 @@ sub register_dispatch {
 sub response {
     my $self   = shift;
     Qnai::Response->new(@_,$self->encoding())->finalize();
+}
+
+sub register_prepare {
+    my ($class,$code) = @_;
+
+    no strict 'refs';
+    no warnings 'redefine';
+    *{"${class}::prepare"} = $code;
 }
 
 sub config {
@@ -100,7 +108,10 @@ sub view {
 sub run {
     my $self = shift;
 
+
     try {
+        $self->prepare();
+
         if( my $match_rule = $self->router->match($self->env) ) {
             if( $match_rule->template ) {
                 $self->{template} = $match_rule->template;
