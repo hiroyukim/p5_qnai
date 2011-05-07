@@ -6,7 +6,7 @@ use Carp ();
 sub throw {
     my $class = shift;
     my $args  = shift; 
-    Carp::crop($args);
+    Carp::croak($args);
 }
 
 package Qnai::Exception::HTTP;
