@@ -1,4 +1,7 @@
 use inc::Module::Install;
+use Module::Install::Repository;
+use Module::Install::AuthorTests;
+
 name 'Qnai';
 all_from 'lib/Qnai.pm';
 license 'perl';
