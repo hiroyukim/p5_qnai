@@ -56,7 +56,7 @@ sub match {
     my $path_info = $env->{PATH_INFO};
 
     if( $self->is_directory_traversal($path_info) ) {
-        Qnai::Exception::DirectoryTraversal->throw();
+        Qnai::Exception::DirectoryTraversal->throw($path_info);
     }
 
     if( my $match_rule = $self->router_simple->match($env) ) {
@@ -86,7 +86,7 @@ sub match {
 
 sub is_directory_traversal {
     my ($self,$path) = @_;    
-    ( $path =~ /^[\/a-z0-9_]$/ig ) ? 0 : 1;
+    ( $path =~ /^[\/a-z0-9_]+$/ig ) ? 0 : 1;
 }
 
 sub parse_path {

@@ -8,6 +8,11 @@ subtest '/' => sub {
     done_testing();
 };
 
+subtest '/encoding' => sub {
+    ok( not Qnai::Router->is_directory_traversal('/encoding') );
+    done_testing();
+};
+
 subtest '/../hoge' => sub {
     ok( Qnai::Router->is_directory_traversal('/../hoge') );
     done_testing();
