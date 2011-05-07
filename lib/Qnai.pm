@@ -9,7 +9,6 @@ use Qnai::Router;
 use Qnai::View::Factory;
 use Qnai::Router::Rule;
 use Try::Tiny;
-use Sub::Name;
 use Carp ();
 
 __PACKAGE__->mk_accessors(qw/env stash req/);
@@ -53,10 +52,13 @@ sub register_dispatch {
     my ($self,$rule) = @_;
     my $class = ref($self);
 
-    my $subname = join('_',(split(/\//,$rule->pattern)));
+    my $subname = join('_','dispatch',(split(/\//,$rule->pattern)));
 
     no strict 'refs';
-    *{"${class}::dispatch"} = subname $subname => $rule->code;
+    no warnings 'redefine';
+    *{"${class}::${subname}"} = $rule->code;
+
+    return $subname;
 }
 
 sub response {
@@ -104,8 +106,8 @@ sub run {
                 $self->{template} = $match_rule->template;
             }
             if( $match_rule->code ) {
-                $self->register_dispatch($match_rule);
-                $self->dispatch();
+                my $subname = $self->register_dispatch($match_rule);
+                $self->$subname();
             }
         }
         else {
