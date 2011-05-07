@@ -23,4 +23,12 @@ rule('/' => sub {
 
 } => '/root/index.html');
 
+rule('/endocding' => sub {
+    my $self = shift;
+
+    $self->stash->{hoge} = 'こんにちわ';
+
+} => '/root/index.html');
+
+
 1;
