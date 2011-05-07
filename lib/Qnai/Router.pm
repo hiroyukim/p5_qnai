@@ -69,10 +69,10 @@ sub match {
         else {
             my ($dir,$file) = $self->parse_path($path_info);
 
-            my $file_path = join('/','/',@$dir,$file,$self->ext() );
+            my $file_path = join('/','/',@$dir,$file . $self->ext() );
                         
             unless( -e join('/',$self->template_path,$file_path) ) {
-                Qnai::Exception::FileNotFound->throw();
+                Qnai::Exception::FileNotFound->throw($file_path);
             }
 
             return Qnai::Router::Rule->new({
