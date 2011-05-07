@@ -14,6 +14,15 @@ my $rules = [
         },
         template => '/root/index.html',
     }),
+    Qnai::Router::Rule->new({
+        pattern => '/hoge',
+        code    => sub {
+            my $self = shift;
+
+            return 1;
+        },
+        template => '/root/index.html',
+    }),
 ];
 
 my $template_path = './template/'; 
@@ -32,28 +41,39 @@ subtest 'match /' => sub {
     done_testing();
 };
 
+subtest 'parse_path /hoge' => sub {
+    my ($dir,$file) = $router->parse_path('/hoge');
+    cmp_ok( $dir->[0],  'eq', 'root' ); 
+    cmp_ok( $file, 'eq', 'hoge'  ); 
+    done_testing();
+};
+
 subtest 'parse_path /user/edit' => sub {
     my ($dir,$file) = $router->parse_path('/user/edit');
     cmp_ok( $dir->[0],  'eq', 'user' ); 
     cmp_ok( $file, 'eq', 'edit'  ); 
+    done_testing();
 };
 
 subtest 'parse_path /user/edit' => sub {
     my ($dir,$file) = $router->parse_path('/user/edit.html');
     cmp_ok( $dir->[0],  'eq', 'user' ); 
     cmp_ok( $file, 'eq', 'edit'  ); 
+    done_testing();
 };
 
 subtest 'parse_path /hoge/hoge/hoge/hoge/' => sub {
     my ($dir,$file) = $router->parse_path('/hoge/hoge/hoge/hoge/');
     cmp_ok( join('/',@$dir), 'eq', 'hoge/hoge/hoge/hoge' ); 
     cmp_ok( $file, 'eq', 'index'  ); 
+    done_testing();
 };
 
 subtest 'parse_path /' => sub {
     my ($dir,$file) = $router->parse_path('/');
     cmp_ok( $dir->[0],  'eq', 'root' ); 
     cmp_ok( $file, 'eq', 'index'  ); 
+    done_testing();
 };
 
 done_testing();

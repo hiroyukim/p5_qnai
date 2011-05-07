@@ -91,7 +91,7 @@ sub is_directory_traversal {
 
 sub parse_path {
     my ($self,$path) = @_;
-    my ( $dir,$file ) = $path =~ m{^/([a-z0-9_/]*)/([^/.]*)\.?(.+)?$}i;
+    my ( $dir,$file ) = $path =~ m{^/?([a-z0-9_/]*)/([^/.]*)\.?(.+)?$}i;
     unless( $dir ) {
         $dir = 'root'; 
     }
