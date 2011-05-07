@@ -18,10 +18,59 @@ Then install it:
 
 DOCUMENTATION
 
+    package YourModule;
+    use strict;
+    use warnings;
+    use utf8;
+    use File::HomeDir;
+    use Path::Class;
+    use lib dir(File::HomeDir->my_home,'project','p5_qnai','lib')->stringify;
+    our $VERSION = '0.01';
+    use Qnai;
+    use Cwd;
+
+    config({
+        encoding      => 'utf8',
+        template_path => dir( cwd() ,'template' )->stringify,
+        view => {
+            syntax => 'TTerse',
+            path   => [dir(cwd(),'template')->stringify],
+        },
+    });
+
+    rule('/' => sub {
+        my $self = shift;
+
+        $self->stash->{hoge} = 'hello';
+
+    } => '/root/index.html');
+
+    rule('/endocding' => sub {
+        my $self = shift;
+
+        $self->stash->{hoge} = 'こんにちわ';
+
+    } => '/root/index.html');
+
+    package main;
+    use strict;
+    use warnings;
+    use utf8;
+    use Plack::Builder;
+
+    my $app = sub {
+        YourModule->new(shift)->run();
+    };
+
+    builder {
+        enable "Plack::Middleware::Static",
+            path => qr{^/favicon.ico$}, root => './htdocs/';
+        $app;
+    };
+
+
 Qnai documentation is available as in POD. So you can do:
 
     % perldoc Qnai
 
-to read the documentation online with your favorite pager.
 
-Default Name
