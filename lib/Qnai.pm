@@ -61,7 +61,7 @@ sub register_dispatch {
 
 sub response {
     my $self   = shift;
-    Qnai::Response->new(@_)->finalize();
+    Qnai::Response->new(@_,$self->encoding())->finalize();
 }
 
 sub config {
@@ -129,7 +129,7 @@ sub run {
     return $self->response(
         200,
         ['Content-type' => 'text/html'],
-        Encode::encode($self->encoding,$content),
+        $content,
     );
 }
 
