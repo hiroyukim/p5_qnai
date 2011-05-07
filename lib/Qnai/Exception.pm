@@ -24,5 +24,7 @@ use base 'Qnai::Exception';
 package Qnai::Exception::DirectoryTraversal;
 use base 'Qnai::Exception';
 
+package Qnai::Exception::IgnoreTemplate;
+use base 'Qnai::Exception';
 
 1;

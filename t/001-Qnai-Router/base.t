@@ -27,12 +27,17 @@ my $rules = [
 
 my $template_path = './template/'; 
 
-my $router = Qnai::Router->new( $template_path => $rules );
+my $router = Qnai::Router->new( $template_path => $rules => { ignore_auto_template => 'include' } );
 
 ok $router;
 
 subtest 'include system_template' => sub {
     cmp_ok( $rules->[0], 'cmp', $router->system_template->[0] );
+    done_testing();
+};
+
+subtest 'ignore_auto_tempalte' => sub {
+    ok($router->is_ignore_auto_template('/include/header.html') );
     done_testing();
 };
 

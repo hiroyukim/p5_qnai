@@ -28,6 +28,7 @@ sub new {
         system_template => [],
         template_path   => $template_path,
         ext             => $opt->{ext} || '.html',
+        ignore_auto_template => $opt->{ignore_auto_template} || undef, 
     }, $class;
 
     $self->_init();
@@ -64,7 +65,10 @@ sub match {
     }
     else {
         if( $self->is_system_template($path_info) ) {
-            Qnai::Exception::SystemTemplate->throw();
+            Qnai::Exception::SystemTemplate->throw($path_info);
+        }
+        elsif( $self->is_ignore_auto_template($path_info) ) {
+            Qnai::Exception::IgnoreTemplate->throw($path_info);
         }
         else {
             my ($dir,$file) = $self->parse_path($path_info);
@@ -107,6 +111,14 @@ sub is_system_template {
     my $self = shift;
     my $template_path = shift;
     ( grep { $template_path eq $_ } @{$self->system_template} ) ? 1 : 0;
+}
+
+sub is_ignore_auto_template {
+    my $self = shift;
+    my $template_path = shift;
+    my $ignore_auto_template = $self->{ignore_auto_template} or return;
+    ( $template_path =~ /$ignore_auto_template/ ) ? 1 : 0;
+    
 }
 
 1;
