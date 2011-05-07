@@ -10,6 +10,7 @@ use Qnai::View::Factory;
 use Qnai::Router::Rule;
 use Try::Tiny;
 use Sub::Name;
+use Carp ();
 
 __PACKAGE__->mk_accessors(qw/env stash req/);
 
@@ -113,7 +114,7 @@ sub run {
     }
     catch {
         my $err = $_; 
-        Carp::confess($err); #FIXME 
+        Carp::confess($err);
     };
 
     my $content = $self->view->render(
