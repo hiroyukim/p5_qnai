@@ -12,7 +12,7 @@ requires 'Test::More'                => 0.88;
 requires 'Router::Simple'            => 0.02;
 
 tests 't/*.t t/*/*.t t/*/*/*.t';
-author_tests 'xt';
+recursive_author_tests('xt');
 
 test_requires 'Test::More';
 auto_set_repository;
